@@ -1,0 +1,51 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+%\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+     
+\sloppy
+
+\title{A Memory-Based Unsupervised Approach for Online Network Flow Profiling Using Weightless Neural Networks}
+
+\author{Gabriel Aquino\inst{2}, Gabriel Martins\inst{1}, Marcos Araújo\inst{1}, Lorena Mamede Botelho\inst{1}, \\Pedro Kury Kitagawa \inst{3}, João Pedro Da Veiga Nunes \inst{3}, Claudio Miceli de Farias\inst{1}}
+
+
+\address{   
+    Instituto de Computação (IC) - UFRJ
+    \nextinstitute 
+    Programa de Engenharia de Sistemas e Computação (PESC) - UFRJ 
+    \nextinstitute
+    Laboratorio de Redes de Alta Velocidade (RAVEL) - UFRJ 
+    \\ Rio de Janeiro -- RJ -- Brazil
+  \email{
+      gabrielaquino@ic.ufrj.br, \{joaopvn, pedro\}@ravel.ufrj.br
+  }
+  \email{
+      \{marcosa,lorenamb,gmoc,cmicelifarias\}@cos.ufrj.br
+  }
+}
+
+\begin{document} 
+
+\maketitle
+
+\begin{abstract}
+This work proposes an unsupervised, memory-based approach for online profiling of network flows using Weightless Neural Networks (WNN) for the detection of anomalous behaviors. Unlike supervised models, the technique enables the profiling of network flows and the identification of behaviors whose signatures are not yet known, acting as a trigger for the incremental improvement of a knowledge base of such behaviors and enabling the identification of zero-day attacks. Encoding strategies for continuous, categorical, and structural variables are investigated with the goal of preserving semantic properties of network traffic.
+\end{abstract}
+
+%=================================%
+\input{sections/1-intro}
+\input{sections/2-revsis}
+\input{sections/3-prop}
+\input{sections/4-exp}
+\input{sections/5-final}
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}

@@ -1,0 +1,84 @@
+* Objetivo 
+    - Conceitualizar, implementar e avaliar artefatos tecnológicos
+
+* Conceitualizar
+    - Processo de formulação a partir de um grounded truth (premissa).
+    - Aqui se define as metricas e metodologias de avaliação dos artefatos
+
+* implementar
+    - Descrição e arguição das decisões de projeto isoladas em cenários que contribuem incrementalmente para a solução.
+    - Apresentação dos processos, modelos e artefatos.
+
+* Avaliar artefatos tecnológicos
+    -  Apresentar resultados isolados para cada cenário e a construção da solução (instanciando os processos / arquiteturas ) e resultados para a solução implementada face as metricas e e metodologias de avaliações definidas na etapa de contextualização.
+
+
+
+
+
+Nosso caso: 
+
+Proposta de Grounded Truth (GT): 
+
+Aqui deve vir da literatura e levar em consideração os elementos abaixo que foram retirado de livro - Artificial Intelligence - A Modern Approach
+
+* An agent is anything that can be viewed as perceiving its environment through sensors and
+acting upon that environment through actuators
+
+* percept to refer to the agent’s perceptual inputs at any given instant. An
+agent’s percept sequence is the complete history of everything the agent has ever perceived.
+
+* agent’s behavior is described by the agent function that maps any given percept sequence to an action.
+
+* Experience of the agent happens as it is plunked down in an environment, it generates a sequence of actions according to the percepts it receives. This sequence of actions causes the environment to go through a sequence of states. If the sequence is desirable, then the agent has performed well. This notion of desirability is captured by a performance measure that evaluates any given sequence of environment states.
+
+* A task defines Performance, Environment, Actuators, Sensors.
+
+Portano o problema que um agente resolve pode ser definido em termos de:
+
+% incomplete here
+* States: 
+* Initial state: 
+* Actions: 
+* Transition model: 
+* Goal test: 
+%until here
+
+
+Proposta de Avaliação:
+
+
+                        Resultados de pesquisa x Atividades da Pesquisa
+                        
+                               Construção                    |           Avaliação
+                        Objetivo      |    Artefatos         |    Métricas    |   Metodologia
+Conceitos    |Adaptação dos conceitos | Revisão de literatura|Completeza e    |  Argumentação
+             |que norteriam o problema| definição dos papeis:|Inteligibilidade|     Lógica
+             |em ia para redes (GT)   | tarefa agente e exp  |                |
+             |                        |                      |                |
+Modelos      | Descrever como usar    | Metricas de avaliação| Completeza e   | Argumentação
+             | as classes do unsup    | da representatividade| fidelidade com |     Lógica
+             | para fazer o profiling | das classes e treino | mundo real     |
+             |                        | online               |                |
+             |                        |                      |                |
+Método       | Demostrar a utilização | Combinatorial Data   | Consistencia   | Avaliação de  
+             |com os dados que contem| Fusion model/process  |  interna       |Especialistas(AE)
+             | o DDOS e usando  Combi-|                      |                |
+             |  natorial DataFusion   |                      |                |
+             |                        |                      |                |
+Implementação|                        |                      |                | Comparar rotulação
+             |                        |    ????              |                | gerada com rótulos de           
+             |                        |                      |                | dataset públicos, e
+             |                        |                      |                | comparar performance
+             |                        |                      |  consistencia  | com baselines pre-existentes
+             |                        |                      |     interna    | 
+
+
+Metricas para custer
+
+Silhouette Score	Cluster quality 
+Davies-Bouldin		Similaridade entre clusters
+Calinski-Harabasz	Variancia  intra clusters
+Dunn Index	    	Min dist inter 
+Cauchy-Schwarz         ??
+Density-Based Clustering Validation ??
