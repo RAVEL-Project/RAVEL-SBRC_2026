@@ -10,8 +10,9 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-#from torchwnn.datasets.iris import Iris
-from sklearn.datasets import load_iris
+#git hub e python setup.py install
+from torchwnn.datasets.iris import Iris
+#from sklearn.datasets import load_iris
 from torchwnn.classifiers import Wisard
 from torchwnn.encoding import Thermometer
 
@@ -25,7 +26,8 @@ print(f"Using {device} device")
 # Load dataset
 # ==================================================
 
-iris = load_iris()#Iris()
+#iris = load_iris()#
+iris=Iris()
 X = torch.tensor(iris.features.values).to(device)
 y = torch.tensor(list(iris.labels)).squeeze().to(device)
 
