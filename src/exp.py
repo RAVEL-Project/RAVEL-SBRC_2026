@@ -129,3 +129,6 @@ for bits_encoding in bits_values:
     )
     print("Confusion matrix:")
     print(conf_matrix)
+    print (f"\nEncoding time {encoding_time} seconds")
+    print (f"Train time {training_time} seconds")
+    print (f"Prediction time {training_time} seconds")
