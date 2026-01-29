@@ -142,7 +142,7 @@ for bits_encoding in bits_values:
     print(f"\nRunning experiment with bits_encoding = {bits_encoding}")
     X_train, X_test,encoding_time=encoding(X_train_raw,X_test_raw)
     
-    training_time, model=exp_train(X_train_raw, y_train)
+    training_time, model=exp_train(X_train, y_train)
     
     results,prediction_time,acc,precision,recall,f1,conf_matrix=exp_pred(X_test, y_test, model, encoding_time, training_time)
 
