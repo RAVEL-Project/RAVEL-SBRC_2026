@@ -144,7 +144,7 @@ for bits_encoding in bits_values:
     
     training_time, model=exp_train(X_train_raw, y_train)
     
-    esults,prediction_time,acc,precision,recall,f1,conf_matrix=exp_pred(X_test, y_test, model, encoding_time, training_time)
+    results,prediction_time,acc,precision,recall,f1,conf_matrix=exp_pred(X_test, y_test, model, encoding_time, training_time)
 
     # Print summary
     print(
