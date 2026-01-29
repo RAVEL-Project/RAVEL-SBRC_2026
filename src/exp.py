@@ -1,5 +1,6 @@
 import torch
 import time
+import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
@@ -10,78 +11,7 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-#git hub e python setup.py install
-from torchwnn.datasets.iris import Iris
-#from sklearn.datasets import load_iris
-from torchwnn.classifiers import Wisard
-from torchwnn.encoding import Thermometer
-
-# ==================================================
-# Device
-# ==================================================
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using {device} device")
-
-# ==================================================
-# Load dataset
-# ==================================================
-
-#iris = load_iris()#
-iris=Iris()
-X = torch.tensor(iris.features.values).to(device)
-y = torch.tensor(list(iris.labels)).squeeze().to(device)
-
-# ==================================================
-# FIXED train / test split
-# ==================================================
-X_train_raw, X_test_raw, y_train, y_test = train_test_split(
-    X, y, test_size=0.3, random_state=0, stratify=y
-)
-
-# ==================================================
-# Values to test
-# ==================================================
-bits_values = [5, 10, 15, 20, 25, 30]
-
-results = []
-
-for bits_encoding in bits_values:
-    print(f"\nRunning experiment with bits_encoding = {bits_encoding}")
-
-    # ==================================================
-    # Encoding
-    # ==================================================
-    if device.type == "cuda":
-        torch.cuda.synchronize()
-    start_encoding = time.perf_counter()
-
-    encoding = Thermometer(bits_encoding).fit(X_train_raw)
-    X_train = encoding.binarize(X_train_raw).flatten(start_dim=1)
-    X_test = encoding.binarize(X_test_raw).flatten(start_dim=1)
-
-    if device.type == "cuda":
-        torch.cuda.synchronize()
-    encoding_time = time.perf_counter() - start_encoding
-
-    # ==================================================
-    # Model
-    # ==================================================
-    entry_size = X_train.shape[1]
-    model = Wisard(entry_size, iris.num_classes, tuple_size=8)
-
-    # ==================================================
-    # Training
-    # ==================================================
-    if device.type == "cuda":
-        torch.cuda.synchronize()
-    start_training = time.perf_counter()
-
-    with torch.no_grad():
-        model.fit(X_train, y_train)
-
-    if device.type == "cuda":
-        torch.cuda.synchronize()
-    training_time = time.perf_counter() - start_training
+def exp_pred(X_test, y_test, model, encoding_time, training_time):
 
     # ==================================================
     # Prediction
@@ -96,8 +26,7 @@ for bits_encoding in bits_values:
     if device.type == "cuda":
         torch.cuda.synchronize()
     prediction_time = time.perf_counter() - start_prediction
-
-    # ==================================================
+     # ==================================================
     # Metrics
     # ==================================================
     acc = accuracy_score(y_test, predictions)
@@ -118,6 +47,104 @@ for bits_encoding in bits_values:
         "prediction_time_sec": prediction_time,
         "confusion_matrix": conf_matrix
     })
+
+    return results,prediction_time,acc,precision,recall,f1,conf_matrix
+
+   
+
+def exp_train(X_train,  y_train):
+
+
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+    
+
+    # ==================================================
+    # Model
+    # ==================================================
+    entry_size = X_train.shape[1]
+    model = Wisard(entry_size, num_classes, tuple_size=8)
+
+    # ==================================================
+    # Training
+    # ==================================================
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+    start_training = time.perf_counter()
+
+    with torch.no_grad():
+        model.fit(X_train, y_train)
+
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+    training_time = time.perf_counter() - start_training
+    return training_time, model
+
+def encoding(X_train_raw,X_test_raw):
+
+    # ==================================================
+    # Encoding
+    # ==================================================
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+    start_encoding = time.perf_counter()
+
+    encoding = Thermometer(bits_encoding).fit(X_train_raw)
+    X_train = encoding.binarize(X_train_raw).flatten(start_dim=1)
+    X_test = encoding.binarize(X_test_raw).flatten(start_dim=1)
+    encoding_time = time.perf_counter() - start_encoding
+    return X_train, X_test,encoding_time
+
+
+
+#git hub e python setup.py install
+#from torchwnn.datasets.iris import Iris
+#from sklearn.datasets import load_iris
+from torchwnn.classifiers import Wisard
+from torchwnn.encoding import Thermometer
+
+# ==================================================
+# Device
+# ==================================================
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using {device} device")
+
+# ==================================================
+# Load dataset
+# ==================================================
+
+# iris=Iris()
+# features=iris.features
+# labels=iris.labels
+#num_classes=iris.num_classes
+features=pd.read_pickle('./data/feature_2.pkl')
+labels=pd.read_pickle('./data/label_2.pkl')["label"]
+num_classes=pd.read_pickle('./data/n_classes.pkl').squeeze()
+
+X = torch.tensor(features.values).to(device)
+y = torch.tensor(list(labels)).squeeze().to(device)
+
+# ==================================================
+# FIXED train / test split
+# ==================================================
+X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=0, stratify=y
+)
+
+# ==================================================
+# Values to test
+# ==================================================
+bits_values = [5]#, 10, 15, 20, 25, 30]
+
+results = []
+
+for bits_encoding in bits_values:
+    print(f"\nRunning experiment with bits_encoding = {bits_encoding}")
+    X_train, X_test,encoding_time=encoding(X_train_raw,X_test_raw)
+    
+    training_time, model=exp_train(X_train_raw, y_train)
+    
+    esults,prediction_time,acc,precision,recall,f1,conf_matrix=exp_pred(X_test, y_test, model, encoding_time, training_time)
 
     # Print summary
     print(
