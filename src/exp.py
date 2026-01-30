@@ -160,7 +160,7 @@ X_train_raw, X_test_raw, y_train, y_test = train_test_split(
 # ==================================================
 # Values to test
 # ==================================================
-bits_values = [5]#, 10, 15, 20, 25, 30]
+bits_values = [5, 10, 15, 20, 25, 30]
 
 results = []
 
