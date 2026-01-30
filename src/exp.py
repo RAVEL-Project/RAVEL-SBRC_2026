@@ -3,6 +3,8 @@ import time
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from os import listdir
+from os.path import isfile  , join
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -10,6 +12,20 @@ from sklearn.metrics import (
     f1_score,
     confusion_matrix
 )
+
+
+def data_in(arquivo):
+    features=pd.DataFrame()
+    labels=pd.DataFrame()
+
+    if  "feature" in arquivo:
+        features=pd.read_pickle(arquivo)
+
+    if "label" in arquivo:
+        labels=pd.read_pickle(arquivo)["label"]
+            
+    return features, labels 
+
 
 def exp_pred(X_test, y_test, model, encoding_time, training_time):
 
@@ -117,8 +133,18 @@ print(f"Using {device} device")
 # features=iris.features
 # labels=iris.labels
 #num_classes=iris.num_classes
-features=pd.read_pickle('./data/feature_2.pkl')
-labels=pd.read_pickle('./data/label_2.pkl')["label"]
+features=pd.DataFrame()
+labels=pd.DataFrame()
+pasta_csv='data/'
+for arquivo in sorted(listdir(pasta_csv),key=lambda s: (len(s), s)):
+    file_path=join(pasta_csv, arquivo)
+    if isfile(file_path) and ".pkl" in arquivo:
+        f, l=data_in(file_path)
+        features = pd.concat([features, f], ignore_index=True)
+        labels = pd.concat([labels, l], ignore_index=True)
+
+
+
 num_classes=pd.read_pickle('./data/n_classes.pkl').squeeze()
 
 X = torch.tensor(features.values).to(device)
