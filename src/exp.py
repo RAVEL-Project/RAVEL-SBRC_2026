@@ -149,7 +149,7 @@ for arquivo in sorted(listdir(pasta_csv), key=lambda s: (len(s), s)):
 
 num_classes = pd.read_pickle("./data/n_classes.pkl").squeeze()
 
-X = torch.tensor(features.values)
+X = torch.tensor(features.values).to(device)
 # hotfix dimensão
 y = torch.tensor(labels["label"].values, dtype=torch.long).to(device)
 
