@@ -4,31 +4,30 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from os import listdir
-from os.path import isfile  , join
+from os.path import isfile, join
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
     recall_score,
     f1_score,
-    confusion_matrix
+    confusion_matrix,
 )
 
 
 def data_in(arquivo):
-    features=pd.DataFrame()
-    labels=pd.DataFrame()
+    features = pd.DataFrame()
+    labels = pd.DataFrame()
 
-    if  "feature" in arquivo:
-        features=pd.read_pickle(arquivo)
+    if "feature" in arquivo:
+        features = pd.read_pickle(arquivo)
 
     if "label" in arquivo:
-        labels=pd.read_pickle(arquivo)["label"]
-            
-    return features, labels 
+        labels = pd.read_pickle(arquivo)["label"]
+
+    return features, labels
 
 
 def exp_pred(X_test, y_test, model, encoding_time, training_time):
-
     # ==================================================
     # Prediction
     # ==================================================
@@ -42,7 +41,7 @@ def exp_pred(X_test, y_test, model, encoding_time, training_time):
     if device.type == "cuda":
         torch.cuda.synchronize()
     prediction_time = time.perf_counter() - start_prediction
-     # ==================================================
+    # ==================================================
     # Metrics
     # ==================================================
     acc = accuracy_score(y_test, predictions)
@@ -52,28 +51,26 @@ def exp_pred(X_test, y_test, model, encoding_time, training_time):
     conf_matrix = confusion_matrix(y_test, predictions)
 
     # Save
-    results.append({
-        "bits_encoding": bits_encoding,
-        "accuracy": acc,
-        "precision_macro": precision,
-        "recall_macro": recall,
-        "f1_macro": f1,
-        "encoding_time_sec": encoding_time,
-        "training_time_sec": training_time,
-        "prediction_time_sec": prediction_time,
-        "confusion_matrix": conf_matrix
-    })
+    results.append(
+        {
+            "bits_encoding": bits_encoding,
+            "accuracy": acc,
+            "precision_macro": precision,
+            "recall_macro": recall,
+            "f1_macro": f1,
+            "encoding_time_sec": encoding_time,
+            "training_time_sec": training_time,
+            "prediction_time_sec": prediction_time,
+            "confusion_matrix": conf_matrix,
+        }
+    )
 
-    return results,prediction_time,acc,precision,recall,f1,conf_matrix
-
-   
-
-def exp_train(X_train,  y_train):
+    return results, prediction_time, acc, precision, recall, f1, conf_matrix
 
 
+def exp_train(X_train, y_train):
     if device.type == "cuda":
         torch.cuda.synchronize()
-    
 
     # ==================================================
     # Model
@@ -96,8 +93,8 @@ def exp_train(X_train,  y_train):
     training_time = time.perf_counter() - start_training
     return training_time, model
 
-def encoding(X_train_raw,X_test_raw):
 
+def encoding(X_train_raw, X_test_raw):
     # ==================================================
     # Encoding
     # ==================================================
@@ -109,13 +106,12 @@ def encoding(X_train_raw,X_test_raw):
     X_train = encoding.binarize(X_train_raw).flatten(start_dim=1)
     X_test = encoding.binarize(X_test_raw).flatten(start_dim=1)
     encoding_time = time.perf_counter() - start_encoding
-    return X_train, X_test,encoding_time
+    return X_train, X_test, encoding_time
 
 
-
-#git hub e python setup.py install
-#from torchwnn.datasets.iris import Iris
-#from sklearn.datasets import load_iris
+# git hub e python setup.py install
+# from torchwnn.datasets.iris import Iris
+# from sklearn.datasets import load_iris
 from torchwnn.classifiers import Wisard
 from torchwnn.encoding import Thermometer
 
@@ -132,23 +128,30 @@ print(f"Using {device} device")
 # iris=Iris()
 # features=iris.features
 # labels=iris.labels
-#num_classes=iris.num_classes
-features=pd.DataFrame()
-labels=pd.DataFrame()
-pasta_csv='data/'
-for arquivo in sorted(listdir(pasta_csv),key=lambda s: (len(s), s)):
-    file_path=join(pasta_csv, arquivo)
+# num_classes=iris.num_classes
+features = pd.DataFrame()
+labels = pd.DataFrame()
+pasta_csv = "data/"
+
+# redução de uso dos datasets
+valid_ids = [str(i) for i in range(2, 5)]
+
+for arquivo in sorted(listdir(pasta_csv), key=lambda s: (len(s), s)):
+    if not any(f"_{vid}.pkl" in arquivo for vid in valid_ids):
+        continue
+
+    file_path = join(pasta_csv, arquivo)
     if isfile(file_path) and ".pkl" in arquivo:
-        f, l=data_in(file_path)
+        f, l = data_in(file_path)
         features = pd.concat([features, f], ignore_index=True)
         labels = pd.concat([labels, l], ignore_index=True)
 
 
+num_classes = pd.read_pickle("./data/n_classes.pkl").squeeze()
 
-num_classes=pd.read_pickle('./data/n_classes.pkl').squeeze()
-
-X = torch.tensor(features.values).to(device)
-y = torch.tensor(list(labels)).squeeze().to(device)
+X = torch.tensor(features.values)
+# hotfix dimensão
+y = torch.tensor(labels["label"].values, dtype=torch.long).to(device)
 
 # ==================================================
 # FIXED train / test split
@@ -166,11 +169,13 @@ results = []
 
 for bits_encoding in bits_values:
     print(f"\nRunning experiment with bits_encoding = {bits_encoding}")
-    X_train, X_test,encoding_time=encoding(X_train_raw,X_test_raw)
-    
-    training_time, model=exp_train(X_train, y_train)
-    
-    results,prediction_time,acc,precision,recall,f1,conf_matrix=exp_pred(X_test, y_test, model, encoding_time, training_time)
+    X_train, X_test, encoding_time = encoding(X_train_raw, X_test_raw)
+
+    training_time, model = exp_train(X_train, y_train)
+
+    results, prediction_time, acc, precision, recall, f1, conf_matrix = exp_pred(
+        X_test, y_test, model, encoding_time, training_time
+    )
 
     # Print summary
     print(
@@ -182,6 +187,6 @@ for bits_encoding in bits_values:
     )
     print("Confusion matrix:")
     print(conf_matrix)
-    print (f"\nEncoding time {encoding_time} seconds")
-    print (f"Train time {training_time} seconds")
-    print (f"Prediction time {training_time} seconds")
+    print(f"\nEncoding time {encoding_time} seconds")
+    print(f"Train time {training_time} seconds")
+    print(f"Prediction time {training_time} seconds")
