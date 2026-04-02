@@ -206,7 +206,7 @@ entry_size = features.values.shape[1]
 model = Wisard(entry_size, num_classes, tuple_size=8)
 
 #batch implementation
-batch_size=128
+batch_size=256
 l_data=len(features.index)
 bit_t=10
 er=0
