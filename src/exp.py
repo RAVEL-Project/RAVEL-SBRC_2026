@@ -72,9 +72,10 @@ def exp_train(X_train, y_train,training_time,model):
 
     with torch.no_grad():
         if args.model=='wis' and args.bleaching:
-            model.fit(X_train, y_train)
-        else:
             model.fit_bleach(X_train, y_train)
+            
+        else:
+            model.fit(X_train, y_train)
     training_time += time.perf_counter() - start_training
     return training_time, model
 
@@ -127,7 +128,7 @@ parser.add_argument("--bleaching", action="store_true", help="set bleaching para
 
 # #BloomWisard
 parser.add_argument("-c","--capacity", type=int, help="BloomWisard capacity parameter",default=100)
-parser.add_argument("-e","--error", type=int, help="BloomWisard error parameter",default=0.8)
+parser.add_argument("-e","--error", type=float, help="BloomWisard error parameter",default=0.8)
 
 args = parser.parse_args()
 
@@ -305,7 +306,7 @@ print (f"\n {er} | {er/d} de batchs perdidos.")
 with open(mypath+"/results_df.pkl", 'wb') as file:
     pkl.dump(test_labels , file)
 try:
-    p=precision_score(results, test_labels.labels.values.tolist(),average='weighted')
+    p=precision_score(results, test_labels.labels.values.tolist(),average='macro')
     
     with open(mypath+"/time.csv", "w", encoding="utf-8") as f:
         f.write("encoding_time,training_time,prediction_time,model_size,mAP\n")
@@ -335,5 +336,5 @@ except Exception as e :
         f.write("encoding_time,training_time,prediction_time,model_size\n")
         f.write(f"{encoding_time},{training_time},{prediction_time},{model_size}")
    
-    # print (results)
-    #print(test_labels)
+#print (results)
+#print(test_labels)
