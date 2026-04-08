@@ -111,23 +111,23 @@ def main(X_train_raw,y_train,encoding_time,training_time,model,bit_encoding):
 #==================================================
 # setting up 
 #==================================================
-parser = argparse.ArgumentParser(description="Exemplo simples com argparse")
+parser = argparse.ArgumentParser(description='Experimental configuration for WiSARD and BloomWisard')
 
 parser.add_argument("--data", help="data path",default='./data/')
 parser.add_argument("-o","--output", help="output path",default='./results/')
 parser.add_argument("--model", help="bloom ou wis",default='wis')
 parser.add_argument("-t","--thermometer-size", type=int, help="numero de bits do termometro",default=5)
 parser.add_argument("-b","--batch-size", type=int, help="batch size",default=128)
-parser.add_argument("--test_size", type=float, help="test data %",default=0.1)
+parser.add_argument("--test-size", type=float, help="test data split proportion",default=0.1)
 
-# Wisard
+# # Wisard
 parser.add_argument("--tuple-size", type=int, help="tuple size parameter",default=8)
-# Flag (True/False)
+# # Flag (True/False)
 parser.add_argument("--bleaching", action="store_true", help="set bleaching parameter true")
 
-#BloomWisard
-parser.add_argument("-c","--capacity", type=int, help="capacity parameter",default=100)
-parser.add_argument("-e","--error", type=int, help="error parameter",default=0.8)
+# #BloomWisard
+parser.add_argument("-c","--capacity", type=int, help="BloomWisard capacity parameter",default=100)
+parser.add_argument("-e","--error", type=int, help="BloomWisard error parameter",default=0.8)
 
 args = parser.parse_args()
 
