@@ -176,7 +176,7 @@ else:
     f=None
     
     labels=labels.astype('int')
-    num_classes=pd.read_pickle('./data/n_classes.pkl').squeeze()
+    num_classes=pd.read_pickle(pasta_csv + 'n_classes.pkl').squeeze()
 
 #==================================================
 #End of Loading dataset
